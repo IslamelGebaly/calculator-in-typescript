@@ -1,83 +1,50 @@
 "use strict";
-function main() {
-    const numberBtns = document.querySelectorAll(".number-btn");
-    const pointBtn = document.querySelector("#pnt");
-    const addBtn = document.querySelector("#plus");
-    const subBtn = document.querySelector("#minus");
-    const multBtn = document.querySelector("#mult");
-    const divBtn = document.querySelector("#div");
-    const field = document.querySelector(".input");
-    const outputField = document.querySelector(".output");
-    let isOverwritable = true;
-    let isFloat = false;
-    let isOutputSet = false;
-    let fieldText;
-    let finalValue = 0;
-    numberBtns === null || numberBtns === void 0 ? void 0 : numberBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            if ((field === null || field === void 0 ? void 0 : field.textContent) != null) {
-                if (isOverwritable) {
-                    field.textContent = "";
-                    isOverwritable = false;
+class CalculatorUI {
+    constructor() {
+        this.numberBtns = document.querySelectorAll(".number-btn");
+        this.pointBtn = document.querySelector('#pnt');
+        this.addBtn = document.querySelector("#plus");
+        this.subBtn = document.querySelector("#minus");
+        this.multBtn = document.querySelector("#mult");
+        this.divBtn = document.querySelector("#div");
+        this.field = document.querySelector(".input");
+        this.outputField = document.querySelector(".output");
+        this.isOverwritable = true;
+        this.isFloat = false;
+        this.isOutputSet = false;
+        this.finalValue = 0;
+        this.fieldText = "";
+    }
+    init() {
+        var _a, _b;
+        (_a = this.numberBtns) === null || _a === void 0 ? void 0 : _a.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                var _a;
+                if (((_a = this.field) === null || _a === void 0 ? void 0 : _a.textContent) != null) {
+                    if (this.isOverwritable) {
+                        this.field.textContent = "";
+                        this.isOverwritable = false;
+                    }
+                    this.fieldText = this.field.textContent + btn.textContent;
+                    this.field.textContent = this.fieldText;
                 }
-                fieldText = field.textContent + btn.textContent;
-                field.textContent = fieldText;
+            });
+        });
+        (_b = this.pointBtn) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+            var _a, _b;
+            if (!this.isFloat) {
+                this.isFloat = true;
+                if (((_a = this.field) === null || _a === void 0 ? void 0 : _a.textContent) != null) {
+                    this.isOverwritable = false;
+                    this.fieldText = this.field.textContent + ((_b = this.pointBtn) === null || _b === void 0 ? void 0 : _b.textContent);
+                    this.field.textContent = this.fieldText;
+                }
             }
         });
-    });
-    pointBtn === null || pointBtn === void 0 ? void 0 : pointBtn.addEventListener("click", () => {
-        if (!isFloat) {
-            isFloat = true;
-            if ((field === null || field === void 0 ? void 0 : field.textContent) != null) {
-                isOverwritable = false;
-                fieldText = field.textContent + pointBtn.textContent;
-                field.textContent = fieldText;
-            }
-        }
-    });
-    addBtn === null || addBtn === void 0 ? void 0 : addBtn.addEventListener("click", () => {
-        isOverwritable = true;
-        if (!isOutputSet) {
-            finalValue = Number.parseFloat(fieldText);
-            isOutputSet = true;
-        }
-        else
-            finalValue += Number.parseFloat(fieldText);
-        if (outputField != null)
-            outputField.textContent = finalValue.toString();
-    });
-    subBtn === null || subBtn === void 0 ? void 0 : subBtn.addEventListener("click", () => {
-        isOverwritable = true;
-        if (!isOutputSet) {
-            finalValue = Number.parseFloat(fieldText);
-            isOutputSet = true;
-        }
-        else
-            finalValue -= Number.parseFloat(fieldText);
-        if (outputField != null)
-            outputField.textContent = finalValue.toString();
-    });
-    multBtn === null || multBtn === void 0 ? void 0 : multBtn.addEventListener("click", () => {
-        isOverwritable = true;
-        if (!isOutputSet) {
-            finalValue = Number.parseFloat(fieldText);
-            isOutputSet = true;
-        }
-        else
-            finalValue *= Number.parseFloat(fieldText);
-        if (outputField != null)
-            outputField.textContent = finalValue.toString();
-    });
-    divBtn === null || divBtn === void 0 ? void 0 : divBtn.addEventListener("click", () => {
-        isOverwritable = true;
-        if (!isOutputSet) {
-            finalValue = Number.parseFloat(fieldText);
-            isOutputSet = true;
-        }
-        else
-            finalValue /= Number.parseFloat(fieldText);
-        if (outputField != null)
-            outputField.textContent = finalValue.toString();
-    });
+    }
+}
+function main() {
+    const calculator = new CalculatorUI();
+    calculator.init();
 }
 main();
