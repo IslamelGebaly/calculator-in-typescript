@@ -1,64 +1,45 @@
 class CalculatorUI{
-    private numberBtns;
-    private pointBtn;
-    
-    private addBtn;
-    private subBtn;
-    private multBtn;
-    private divBtn;
-
-    private field;
-    private outputField;
-
     private isOverwritable : boolean;
     private isFloat : boolean;
     private isOutputSet : boolean; 
 
-    private fieldText : string;
-    private finalValue : number;
+    private btns;
+    private pointBtn;
 
-    constructor(){
-        this.numberBtns = document.querySelectorAll(".number-btn");
-        this.pointBtn = document.querySelector('#pnt');
+    private inputField;
 
-        this.addBtn = document.querySelector("#plus");
-        this.subBtn = document.querySelector("#minus");
-        this.multBtn = document.querySelector("#mult");
-        this.divBtn = document.querySelector("#div");
-
-        this.field = document.querySelector(".input");
-        this.outputField = document.querySelector(".output");
-
+    constructor(btns : Element[], pointBtn: Element, inputField : Element){
         this.isOverwritable = true;
         this.isFloat = false;
         this.isOutputSet = false;
 
-        this.finalValue = 0;
-        this.fieldText = "";
+        this.btns = btns;
+        this.pointBtn = pointBtn;
+        this.inputField = inputField;
     }
 
     init(){
-        this.numberBtns?.forEach((btn) => {
+        this.btns?.forEach((btn) => {
             btn.addEventListener("click",  () => {
-                if(this.field?.textContent != null){
+                if(this.inputField?.textContent != null){
                     if(this.isOverwritable){
-                        this.field.textContent = "";
+                        this.inputField.textContent = "";
                         this.isOverwritable = false;
                     }
     
-                    this.fieldText = this.field.textContent + btn.textContent;
-                    this.field.textContent = this.fieldText;
+                    this.inputField.textContent = this.inputField?.textContent + btn.textContent;
                 }
-            })
+            });
         });
+
+    
         
     this.pointBtn?.addEventListener("click", () => {
         if(!this.isFloat){
             this.isFloat = true;
-            if(this.field?.textContent != null){
+            if(this.inputField?.textContent != null){
                 this.isOverwritable = false;
-                this.fieldText = this.field.textContent + this.pointBtn?.textContent;
-                this.field.textContent = this.fieldText;
+                this.inputField.textContent = this.inputField.textContent + this.pointBtn?.textContent;
             }
         }
     });
@@ -67,9 +48,6 @@ class CalculatorUI{
 
 function main(){
 
-    const calculator : CalculatorUI = new CalculatorUI();
-
-    calculator.init();
 }
 
 main();
