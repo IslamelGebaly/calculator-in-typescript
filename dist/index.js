@@ -2,6 +2,8 @@ import { Calculator } from "./calculator.js";
 let isOverwritable = true;
 let isDecimal = false;
 let isOutputSet = false;
+let operand1 = 0;
+let operator = "";
 function main() {
     const calc = new Calculator();
     const inputField = document.querySelector(".input");
@@ -28,44 +30,44 @@ function main() {
             }
         }
     });
-    initOperationButtons(inputField, opField);
+    initOperationButtons(calc, inputField, opField);
 }
-function initOperationButtons(inputField, opField) {
-    const plusBtn = document.querySelector('#plus');
-    const minusBtn = document.querySelector('#minus');
-    const multBtn = document.querySelector('#mult');
-    const divBtn = document.querySelector('#div');
-    plusBtn?.addEventListener("click", () => {
-        if (opField?.textContent != null) {
-            if (!isOverwritable) {
-                resetInput();
-                opField.textContent += (inputField?.textContent + "+");
+function initOperationButtons(calculator, inputField, opField) {
+    const opBtns = document.querySelectorAll(".operator-btn");
+    opBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            if (opField?.textContent != null && inputField?.textContent != null) {
+                let result = Number.parseFloat(inputField.textContent);
+                if (!isOutputSet) {
+                    operand1 = Number.parseFloat(inputField.textContent);
+                    isOutputSet = true;
+                }
+                else {
+                    let operand2 = Number.parseFloat(inputField.textContent);
+                    switch (operator) {
+                        case "+":
+                            result = calculator.add(operand1, operand2);
+                            break;
+                        case "-":
+                            result = calculator.subtract(operand1, operand2);
+                            break;
+                        case "x":
+                            result = calculator.multiply(operand1, operand2);
+                            break;
+                        case "÷":
+                            result = calculator.divide(operand1, operand2);
+                            break;
+                    }
+                    operand1 = result;
+                }
+                if (!isOverwritable) {
+                    resetInput();
+                    opField.textContent += (inputField.textContent + btn.textContent);
+                    operator = btn.textContent;
+                    inputField.textContent = result.toString();
+                }
             }
-        }
-    });
-    minusBtn?.addEventListener("click", () => {
-        if (opField?.textContent != null) {
-            if (!isOverwritable) {
-                resetInput();
-                opField.textContent += (inputField?.textContent + "-");
-            }
-        }
-    });
-    multBtn?.addEventListener("click", () => {
-        if (opField?.textContent != null) {
-            if (!isOverwritable) {
-                resetInput();
-                opField.textContent += (inputField?.textContent + "x");
-            }
-        }
-    });
-    divBtn?.addEventListener("click", () => {
-        if (opField?.textContent != null) {
-            if (!isOverwritable) {
-                resetInput();
-                opField.textContent += (inputField?.textContent + "÷");
-            }
-        }
+        });
     });
 }
 function resetInput() {
