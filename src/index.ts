@@ -15,6 +15,7 @@ function main(){
 
     const numberBtns : NodeListOf<HTMLElement> | null = document.querySelectorAll(".number-btn");
     const pointBtn : Element | null = document.querySelector("#pnt");
+    const equalBtn : Element | null = document.querySelector("#eqls");
 
     numberBtns?.forEach((btn) => {
         btn.addEventListener("click" , () =>{
@@ -39,10 +40,24 @@ function main(){
     });
 
     initOperationButtons(calc, inputField, opField);
-    
+    setupClearButtons(calc, inputField, opField);
+
+    equalBtn?.addEventListener("click", () => {
+        let operand2 : number;
+        let result : number;
+        if(inputField?.textContent != null && opField?.textContent != null){
+            
+            operand2 = Number.parseFloat(inputField.textContent);
+            result = calculate(calc, operand1, operand2, operator);
+            inputField.textContent = result.toString();
+            opField.textContent += `${operand2} = ${result}`;
+            resetInput();
+            isOutputSet = false;
+        }
+    });
 }
 
-function initOperationButtons(calculator : Calculator, inputField : Element | null, opField : Element | null,){
+function initOperationButtons(calc : Calculator, inputField : Element | null, opField : Element | null){
     const opBtns : NodeListOf<Element> | null = document.querySelectorAll(".operator-btn");
 
     opBtns.forEach((btn) =>{
@@ -51,26 +66,13 @@ function initOperationButtons(calculator : Calculator, inputField : Element | nu
                 let result : number = Number.parseFloat(inputField.textContent);
 
                 if(!isOutputSet){
+                    opField.textContent = "";
                     operand1 = Number.parseFloat(inputField.textContent);
                     isOutputSet = true;
                 }else {
                     let operand2 : number = Number.parseFloat(inputField.textContent);
-                    switch(operator){
-                        case "+":
-                            result = calculator.add(operand1, operand2);
-                            break;
-                        case "-":
-                            result = calculator.subtract(operand1, operand2);
-                            break;
-                        case "x":
-                            result = calculator.multiply(operand1, operand2);
-                            break;
-                        case "÷":
-                            result = calculator.divide(operand1, operand2);
-                            break;
-                    }
+                    result = calculate(calc, operand1, operand2, operator);
                     operand1 = result;
-
                 }
 
                 if(!isOverwritable){
@@ -84,9 +86,55 @@ function initOperationButtons(calculator : Calculator, inputField : Element | nu
     });
 }
 
+function setupClearButtons(calc : Calculator, inputField : Element | null, opField : Element | null){
+    const ceBtn : Element | null = document.querySelector('#ce');
+    const cBtn : Element | null = document.querySelector('#c');
+
+    ceBtn?.addEventListener("click", () => {
+        isOverwritable = true;
+        isDecimal = false;
+
+        if(inputField?.textContent != null)
+                inputField.textContent = "0";
+    });
+
+    cBtn?.addEventListener("click", () => {
+        isOverwritable = true;
+        isOutputSet = false;
+        isDecimal = false;
+
+        if(inputField?.textContent != null)
+            inputField.textContent = "0";
+        
+        if(opField?.textContent != null)
+            opField.textContent = "";
+    });
+}
+
+
 function resetInput(){
     isDecimal = false;
     isOverwritable = true;
+}
+
+function calculate(calc : Calculator, operand1 : number, operand2 : number, operator : string | null) : number{
+    let result : number = 0;
+    switch(operator){
+        case "+":
+            result = calc.add(operand1, operand2);
+            break;
+        case "-":
+            result = calc.subtract(operand1, operand2);
+            break;
+        case "x":
+            result = calc.multiply(operand1, operand2);
+            break;
+        case "÷":
+            result = calc.divide(operand1, operand2);
+            break;
+    }
+
+    return result;
 }
 
 main();

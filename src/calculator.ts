@@ -72,6 +72,10 @@ export class Calculator {
         return this.result;
     }
 
+    getOperator(){
+        return this.operator;
+    }
+
     clear(){
         this.operand1 = 0;
         this.operand2 = 0;
