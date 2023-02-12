@@ -1,4 +1,5 @@
 import { Calculator } from "./calculator.js";
+import { Parser } from "./parser.js";
 let isOverwritable = true;
 let isDecimal = false;
 let isOutputSet = false;
@@ -6,6 +7,7 @@ let operand1 = 0;
 let operator = "";
 function main() {
     const calc = new Calculator();
+    const parser = new Parser();
     const inputField = document.querySelector(".input");
     const opField = document.querySelector(".output");
     const numberBtns = document.querySelectorAll(".number-btn");
@@ -40,7 +42,10 @@ function main() {
             operand2 = Number.parseFloat(inputField.textContent);
             result = calculate(calc, operand1, operand2, operator);
             inputField.textContent = result.toString();
-            opField.textContent += `${operand2} = ${result}`;
+            opField.textContent += `${operand2}`;
+            parser.parse(opField.textContent);
+            parser.print();
+            opField.textContent += ` = ${result}`;
             resetInput();
             isOutputSet = false;
         }
@@ -60,12 +65,14 @@ function initOperationButtons(calc, inputField, opField) {
                 else {
                     let operand2 = Number.parseFloat(inputField.textContent);
                     result = calculate(calc, operand1, operand2, operator);
-                    operand1 = result;
+                    if (typeof (result) != "string")
+                        operand1 = result;
                 }
                 if (!isOverwritable) {
                     resetInput();
                     opField.textContent += (inputField.textContent + btn.textContent);
-                    operator = btn.textContent;
+                    if (btn.textContent != null)
+                        operator = btn.textContent?.trim();
                     inputField.textContent = result.toString();
                 }
             }
@@ -109,6 +116,10 @@ function calculate(calc, operand1, operand2, operator) {
             break;
         case "÷":
             result = calc.divide(operand1, operand2);
+            if (result == 'error') {
+                resetInput();
+                result = "Error can't divide by zero";
+            }
             break;
     }
     return result;
