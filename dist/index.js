@@ -43,7 +43,8 @@ function main() {
             result = calculate(calc, operand1, operand2, operator);
             inputField.textContent = result.toString();
             opField.textContent += `${operand2}`;
-            parser.parse(opField.textContent);
+            parser.infixToPostFix(opField.textContent);
+            console.log(parser.calculate(calc));
             parser.print();
             opField.textContent += ` = ${result}`;
             resetInput();

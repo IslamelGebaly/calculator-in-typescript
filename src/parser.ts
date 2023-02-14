@@ -1,3 +1,5 @@
+import { Calculator } from "./calculator";
+
 export class Parser {
     private opStack : string[];
     private output : string[];
@@ -10,8 +12,7 @@ export class Parser {
     infixToPostFix(exp : string) : void{
         const expArray = exp.split(" ");
         
-        for(let i in expArray){
-
+        for(let i of expArray){
             if(/^\d+$/.test(i)){
                 this.output.push(i)
             }
@@ -44,7 +45,6 @@ export class Parser {
 
             while(this.opStack.length != 0){
                 let token : string | undefined = this.opStack.pop();
-                console.log(token)
                 if(token != null){
                     this.output.push(token);
                 }
@@ -52,10 +52,10 @@ export class Parser {
     }
 
     print() : void {
-        console.log(this.output.join(""));
+        console.log(this.output);
     } 
 
-    notGreater(op1 : string, op2: string) : boolean{
+    private notGreater(op1 : string, op2: string) : boolean{
         if(op1 in ["+", "-"] && op2 in ["x", "÷"])
             return true;
 
@@ -66,5 +66,55 @@ export class Parser {
             return true
             
         return false;
+    }
+
+    calculate(calculater : Calculator) : number{
+        const stack : string[] = [];
+        let temp : string | undefined;
+        let operand1 : number | undefined;
+        let operand2 : number | undefined;
+        let ans: string | undefined;
+        let result : number = -1;
+
+        for(let i of this.output){
+            if(/^\d+$/.test(i)){
+                stack.push(i)
+            }
+            else{
+                temp = stack.pop();
+                if(typeof(temp) != "undefined")
+                    operand1 = Number.parseFloat(temp);
+                temp = stack.pop();
+                if(typeof(temp) != "undefined")
+                    operand2 = Number.parseFloat(temp);
+                switch(i){
+                    case "+":
+                        if(typeof(operand1) != "undefined" && typeof(operand2) != "undefined")
+                            ans = calculater.add(operand1, operand2).toString();
+                            break;
+                    case "-":
+                        if(typeof(operand1) != "undefined" && typeof(operand2) != "undefined")
+                            ans = calculater.subtract(operand1, operand2).toString();
+                            break;
+                    case "x":
+                        if(typeof(operand1) != "undefined" && typeof(operand2) != "undefined")
+                            ans = calculater.multiply(operand1, operand2).toString();
+                            break;
+                    case "÷":
+                        if(typeof(operand1) != "undefined" && typeof(operand2) != "undefined")
+                            ans = calculater.divide(operand1, operand2).toString();
+                            break;
+                }
+                if(typeof(ans) != "undefined"){
+                    stack.push(ans);
+                }
+            }
+        }
+
+        temp = stack.pop();
+        if(typeof(temp) != "undefined")
+            result = Number.parseFloat(temp);
+
+        return result;
     }
 }
