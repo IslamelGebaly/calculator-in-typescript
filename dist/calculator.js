@@ -43,6 +43,8 @@ export class Calculator {
         this.operand1 = operand1;
         this.operand2 = operand2;
         this.operator = "/";
+        if (operand2 == 0)
+            return "error";
         this.result = operand1 / operand2;
         return this.result;
     }

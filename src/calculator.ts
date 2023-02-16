@@ -1,4 +1,5 @@
 import { History } from "./history.js";
+
 export class Calculator {
     private operand1 : number;
     private operand2 : number;
@@ -44,10 +45,12 @@ export class Calculator {
         return this.result;
     }
 
-    divide(operand1 : number, operand2 : number) : number{
+    divide(operand1 : number, operand2 : number) : number | string{
         this.operand1 = operand1;
         this.operand2 = operand2;
         this.operator = "/";
+        if(operand2 == 0)
+            return "error";
         this.result = operand1 / operand2;
         return this.result;
     }

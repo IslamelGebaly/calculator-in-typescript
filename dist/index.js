@@ -1,11 +1,11 @@
 import { Calculator } from "./calculator.js";
+import { Parser } from "./parser.js";
 let isOverwritable = true;
 let isDecimal = false;
 let isOutputSet = false;
-let operand1 = 0;
-let operator = "";
 function main() {
     const calc = new Calculator();
+    const parser = new Parser();
     const inputField = document.querySelector(".input");
     const opField = document.querySelector(".output");
     const numberBtns = document.querySelectorAll(".number-btn");
@@ -31,22 +31,23 @@ function main() {
             }
         }
     });
-    initOperationButtons(calc, inputField, opField);
+    initOperationButtons(calc, parser, inputField, opField);
     setupClearButtons(calc, inputField, opField);
     equalBtn?.addEventListener("click", () => {
         let operand2;
         let result;
         if (inputField?.textContent != null && opField?.textContent != null) {
-            operand2 = Number.parseFloat(inputField.textContent);
-            result = calculate(calc, operand1, operand2, operator);
+            opField.textContent += inputField.textContent;
+            parser.infixToPostFix(opField.textContent);
+            result = parser.calculate(calc);
             inputField.textContent = result.toString();
-            opField.textContent += `${operand2} = ${result}`;
+            opField.textContent += ` = ${result}`;
             resetInput();
             isOutputSet = false;
         }
     });
 }
-function initOperationButtons(calc, inputField, opField) {
+function initOperationButtons(calc, parser, inputField, opField) {
     const opBtns = document.querySelectorAll(".operator-btn");
     opBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -54,19 +55,19 @@ function initOperationButtons(calc, inputField, opField) {
                 let result = Number.parseFloat(inputField.textContent);
                 if (!isOutputSet) {
                     opField.textContent = "";
-                    operand1 = Number.parseFloat(inputField.textContent);
+                    opField.textContent += inputField.textContent;
                     isOutputSet = true;
                 }
                 else {
-                    let operand2 = Number.parseFloat(inputField.textContent);
-                    result = calculate(calc, operand1, operand2, operator);
-                    operand1 = result;
+                    opField.textContent += Number.parseFloat(inputField.textContent);
+                    parser.infixToPostFix(opField.textContent);
+                    result = parser.calculate(calc);
                 }
                 if (!isOverwritable) {
                     resetInput();
-                    opField.textContent += (inputField.textContent + btn.textContent);
-                    operator = btn.textContent;
-                    inputField.textContent = result.toString();
+                    opField.textContent += (btn.textContent);
+                    if (btn.textContent != null)
+                        inputField.textContent = result.toString();
                 }
             }
         });
@@ -109,6 +110,10 @@ function calculate(calc, operand1, operand2, operator) {
             break;
         case "÷":
             result = calc.divide(operand1, operand2);
+            if (result == 'error') {
+                resetInput();
+                result = "Error can't divide by zero";
+            }
             break;
     }
     return result;
