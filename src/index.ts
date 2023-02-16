@@ -5,8 +5,6 @@ let isOverwritable : boolean = true;
 let isDecimal : boolean = false;
 let isOutputSet : boolean = false; 
 
-let operand1 : number = 0;
-let operator : string | null = "";
 
 function main(){
     const calc : Calculator = new Calculator();
@@ -40,30 +38,27 @@ function main(){
         }
     });
 
-    initOperationButtons(calc, inputField, opField);
+    initOperationButtons(calc, parser, inputField, opField);
     setupClearButtons(calc, inputField, opField);
 
     equalBtn?.addEventListener("click", () => {
         let operand2 : number;
         let result : number | string;
         if(inputField?.textContent != null && opField?.textContent != null){
-            
-            operand2 = Number.parseFloat(inputField.textContent);
-            result = calculate(calc, operand1, operand2, operator);
-            inputField.textContent = result.toString();
-            opField.textContent += `${operand2}`;
+            opField.textContent += inputField.textContent;
             parser.infixToPostFix(opField.textContent);
-            console.log(parser.calculate(calc))
-            parser.print();
+            result = parser.calculate(calc);
+
+            inputField.textContent = result.toString();
             opField.textContent += ` = ${result}`;
+
             resetInput();
             isOutputSet = false;
-            
         }
     });
 }
 
-function initOperationButtons(calc : Calculator, inputField : Element | null, opField : Element | null){
+function initOperationButtons(calc : Calculator, parser: Parser,inputField : Element | null, opField : Element | null){
     const opBtns : NodeListOf<Element> | null = document.querySelectorAll(".operator-btn");
 
     opBtns.forEach((btn) =>{
@@ -73,20 +68,18 @@ function initOperationButtons(calc : Calculator, inputField : Element | null, op
 
                 if(!isOutputSet){
                     opField.textContent = "";
-                    operand1 = Number.parseFloat(inputField.textContent);
+                    opField.textContent += inputField.textContent;
                     isOutputSet = true;
                 }else {
-                    let operand2 : number = Number.parseFloat(inputField.textContent);
-                    result = calculate(calc, operand1, operand2, operator);
-                    if(typeof(result) != "string")
-                        operand1 = result;
+                    opField.textContent += Number.parseFloat(inputField.textContent);
+                    parser.infixToPostFix(opField.textContent);
+                    result = parser.calculate(calc);
                 }
 
                 if(!isOverwritable){
                     resetInput();
-                    opField.textContent += (inputField.textContent + btn.textContent);
+                    opField.textContent += (btn.textContent);
                     if(btn.textContent != null)
-                    operator = btn.textContent?.trim();
                     inputField.textContent = result.toString();
                 }
             }

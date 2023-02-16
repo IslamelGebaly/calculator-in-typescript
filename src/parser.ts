@@ -10,6 +10,7 @@ export class Parser {
     }
 
     infixToPostFix(exp : string) : void{
+        this.output = [];
         const expArray = exp.split(" ");
         
         for(let i of expArray){
@@ -39,7 +40,6 @@ export class Parser {
                         break
                 }
                 this.opStack.push(i);
-                console.log(this.opStack);
             }
             }
 
@@ -102,11 +102,12 @@ export class Parser {
                             break;
                     case "÷":
                         if(typeof(operand1) != "undefined" && typeof(operand2) != "undefined")
-                            ans = calculater.divide(operand1, operand2).toString();
+                            ans = calculater.divide(operand2, operand1).toString();
                             break;
                 }
                 if(typeof(ans) != "undefined"){
                     stack.push(ans);
+                    console.log(ans);
                 }
             }
         }
