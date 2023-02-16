@@ -1,15 +1,14 @@
 import { Calculator } from "./calculator.js";
+import { Parser } from "./parser.js";
 
 let isOverwritable : boolean = true;
 let isDecimal : boolean = false;
 let isOutputSet : boolean = false; 
 
-let operand1 : number = 0;
-let operator : string | null = "";
 
 function main(){
     const calc : Calculator = new Calculator();
-
+    const parser : Parser = new Parser();
     const inputField : Element | null = document.querySelector(".input");
     const opField : Element | null = document.querySelector(".output");
 
@@ -39,46 +38,48 @@ function main(){
         }
     });
 
-    initOperationButtons(calc, inputField, opField);
+    initOperationButtons(calc, parser, inputField, opField);
     setupClearButtons(calc, inputField, opField);
 
     equalBtn?.addEventListener("click", () => {
         let operand2 : number;
-        let result : number;
+        let result : number | string;
         if(inputField?.textContent != null && opField?.textContent != null){
-            
-            operand2 = Number.parseFloat(inputField.textContent);
-            result = calculate(calc, operand1, operand2, operator);
+            opField.textContent += inputField.textContent;
+            parser.infixToPostFix(opField.textContent);
+            result = parser.calculate(calc);
+
             inputField.textContent = result.toString();
-            opField.textContent += `${operand2} = ${result}`;
+            opField.textContent += ` = ${result}`;
+
             resetInput();
             isOutputSet = false;
         }
     });
 }
 
-function initOperationButtons(calc : Calculator, inputField : Element | null, opField : Element | null){
+function initOperationButtons(calc : Calculator, parser: Parser,inputField : Element | null, opField : Element | null){
     const opBtns : NodeListOf<Element> | null = document.querySelectorAll(".operator-btn");
 
     opBtns.forEach((btn) =>{
         btn.addEventListener("click", () =>{
             if(opField?.textContent != null && inputField?.textContent != null){
-                let result : number = Number.parseFloat(inputField.textContent);
+                let result : number | string = Number.parseFloat(inputField.textContent);
 
                 if(!isOutputSet){
                     opField.textContent = "";
-                    operand1 = Number.parseFloat(inputField.textContent);
+                    opField.textContent += inputField.textContent;
                     isOutputSet = true;
                 }else {
-                    let operand2 : number = Number.parseFloat(inputField.textContent);
-                    result = calculate(calc, operand1, operand2, operator);
-                    operand1 = result;
+                    opField.textContent += Number.parseFloat(inputField.textContent);
+                    parser.infixToPostFix(opField.textContent);
+                    result = parser.calculate(calc);
                 }
 
                 if(!isOverwritable){
                     resetInput();
-                    opField.textContent += (inputField.textContent + btn.textContent);
-                    operator = btn.textContent;
+                    opField.textContent += (btn.textContent);
+                    if(btn.textContent != null)
                     inputField.textContent = result.toString();
                 }
             }
@@ -117,8 +118,8 @@ function resetInput(){
     isOverwritable = true;
 }
 
-function calculate(calc : Calculator, operand1 : number, operand2 : number, operator : string | null) : number{
-    let result : number = 0;
+function calculate(calc : Calculator, operand1 : number, operand2 : number, operator : string | null) : number | string{
+    let result : number | string = 0;
     switch(operator){
         case "+":
             result = calc.add(operand1, operand2);
@@ -131,6 +132,10 @@ function calculate(calc : Calculator, operand1 : number, operand2 : number, oper
             break;
         case "÷":
             result = calc.divide(operand1, operand2);
+            if(result == 'error'){
+                resetInput()
+                result = "Error can't divide by zero";
+            }
             break;
     }
 
