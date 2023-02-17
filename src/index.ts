@@ -4,7 +4,8 @@ import { Parser } from "./parser.js";
 let isOverwritable : boolean = true;
 let isDecimal : boolean = false;
 let isOutputSet : boolean = false; 
-
+let opOn : boolean = false;
+let braketOpened : number = 0;
 
 function main(){
     const calc : Calculator = new Calculator();
@@ -15,6 +16,8 @@ function main(){
     const numberBtns : NodeListOf<HTMLElement> | null = document.querySelectorAll(".number-btn");
     const pointBtn : Element | null = document.querySelector("#pnt");
     const equalBtn : Element | null = document.querySelector("#eqls");
+    const openBraketBtn : Element | null = document.querySelector("#open-braket");
+    const closeBraketBtn : Element | null = document.querySelector("#closed-braket");
 
     numberBtns?.forEach((btn) => {
         btn.addEventListener("click" , () =>{
@@ -26,6 +29,28 @@ function main(){
             else
                 inputField.textContent += btn.textContent;
         });
+    });
+
+    openBraketBtn?.addEventListener("click", () => {
+        if(inputField?.textContent != null)
+            if(isOverwritable){
+                inputField.textContent = ` ${openBraketBtn.textContent} `;
+                isOverwritable = false;
+            }
+            else
+                inputField.textContent += ` ${openBraketBtn.textContent} `;
+            braketOpened++;
+    });
+
+    closeBraketBtn?.addEventListener("click", () => {
+        if(inputField?.textContent != null && opField?.textContent != null)
+        {
+            if(isOutputSet && !isOverwritable && braketOpened > 0){
+                braketOpened--;
+                opField.textContent += `${inputField.textContent} ${closeBraketBtn.textContent}`;
+                resetInput();
+            }
+        }
     });
 
     pointBtn?.addEventListener("click", () => {
@@ -42,10 +67,11 @@ function main(){
     setupClearButtons(calc, inputField, opField);
 
     equalBtn?.addEventListener("click", () => {
-        let operand2 : number;
         let result : number | string;
         if(inputField?.textContent != null && opField?.textContent != null){
-            opField.textContent += inputField.textContent;
+            if(isOverwritable == false){
+                opField.textContent += inputField.textContent;
+            }
             parser.infixToPostFix(opField.textContent);
             result = parser.calculate(calc);
 
@@ -70,18 +96,20 @@ function initOperationButtons(calc : Calculator, parser: Parser,inputField : Ele
                     opField.textContent = "";
                     opField.textContent += inputField.textContent;
                     isOutputSet = true;
-                }else {
-                    opField.textContent += Number.parseFloat(inputField.textContent);
+                }else if(!isOverwritable){
+                    opField.textContent += inputField.textContent;
                     parser.infixToPostFix(opField.textContent);
                     result = parser.calculate(calc);
                 }
 
-                if(!isOverwritable){
+                if(!opOn){
                     resetInput();
-                    opField.textContent += (btn.textContent);
+                    opField.textContent += ` ${btn.textContent} `;
                     if(btn.textContent != null)
                     inputField.textContent = result.toString();
+                    opOn = true;
                 }
+        
             }
         });
     });
@@ -114,6 +142,7 @@ function setupClearButtons(calc : Calculator, inputField : Element | null, opFie
 
 
 function resetInput(){
+    opOn = false;
     isDecimal = false;
     isOverwritable = true;
 }
