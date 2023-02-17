@@ -55,12 +55,12 @@ export class Calculator {
         this.result = Math.sqrt(operand);
         return Math.sqrt(operand);
     }
-    square(operand) {
-        this.operand1 = operand;
-        this.operand2 = 2;
-        this.operator = '^';
-        this.result = Math.sqrt(operand);
-        return operand ^ 2;
+    power(operand1, operand2) {
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.operator = "^";
+        this.result = operand1 ** operand2;
+        return this.result;
     }
     getResult() {
         return this.result;
